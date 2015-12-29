@@ -10,7 +10,16 @@
       "email": "open-source@afrihost.com"
     }
   ],
+  "require": {
+    "symfony/process": "2.8.*",
+    "monolog/monolog": "1.*"
+  },
   "require-dev": {
     "phpunit/phpunit": "4.8.*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Afrihost\\SwarmProcess\\": "src"
+    }
   }
 }
