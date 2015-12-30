@@ -34,7 +34,8 @@ class SwarmProcessTest extends PHPUnit_Framework_TestCase
     /**
      * @expectedException \OutOfBoundsException
      */
-    public function testSetMaxRunStackSizeThrowsOutOfBounds() {
+    public function testSetMaxRunStackSizeThrowsOutOfBounds()
+    {
         $swarm = new SwarmProcess($this->logger);
 
         $swarm->setMaxRunStackSize(-1);
