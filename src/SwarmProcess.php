@@ -46,12 +46,12 @@ class SwarmProcess
     public function setMaxRunStackSize($maxRunStackSize)
     {
         if ($maxRunStackSize <= 0) {
-            throw new \OutOfBoundsException('You many not have a maxRunStack size less or equal to 0. You gave: "'.$maxRunStackSize.'"');
+            throw new \OutOfBoundsException('You many not have a maxRunStack size less or equal to 0. You gave: "' . $maxRunStackSize . '"');
         }
 
         $this->maxRunStackSize = $maxRunStackSize;
 
-        $this->logger->debug('$maxRunStackSize changed to '.$maxRunStackSize);
+        $this->logger->debug('$maxRunStackSize changed to ' . $maxRunStackSize);
 
         return $this;
     }
