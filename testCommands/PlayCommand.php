@@ -34,6 +34,7 @@ $console
                     $listOfProcessesToRun[] = 'sleep '.rand(4,6);
                 }
             }
+
             $swarm = new SwarmProcess($logger);
 
             $swarm->setMaxRunStackSize(5);

@@ -39,6 +39,13 @@ class SwarmProcess
     }
 
     /**
+     * Starts the process of running the Process(es) / commands in the processingStack
+     */
+    public function start()
+    {
+        return $this;
+    }
+
     /**
      * Runs all the processes, not going over the maxRunStackSize, and continuing until all processes in the processingStack has run their course.
      */
@@ -67,6 +74,16 @@ class SwarmProcess
             }
         }
     }
+
+    /**
+     * Does the necessary work to figure out whether a process is done and should be removed from the runningStack as well as adding the next process(es) in line into empty slot(s)
+     */
+    public function tick()
+    {
+        return $this;
+    }
+
+    /**
      * Pushes a native command, ex "ls -lahtr" on the processing stack after converting it to a Process object
      *
      * @param string $cmd
@@ -89,12 +106,14 @@ class SwarmProcess
     {
         $this->processingStack[] = $process;
 
-        $this->logger->debug('Process pushed on to stack. Stack size: '.count($this->processingStack));
+        $this->logger->debug('Process pushed on to stack. Stack size: ' . count($this->processingStack));
 
         return $this;
     }
 
     /**
+     * Gets the maximum number of processes that can be run at the same time (concurrently)
+     *
      * @return int
      */
     public function getMaxRunStackSize()
@@ -103,6 +122,8 @@ class SwarmProcess
     }
 
     /**
+     * Set the maximum number of processes that can be run at the same time (concurrently)
+     *
      * @param int $maxRunStackSize
      * @return SwarmProcess
      */
