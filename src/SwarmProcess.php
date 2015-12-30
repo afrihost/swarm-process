@@ -8,6 +8,7 @@
 namespace Afrihost\SwarmProcess;
 
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Process\Process;
 
 class SwarmProcess
 {
@@ -29,6 +30,34 @@ class SwarmProcess
         $this->logger = $logger;
 
         $this->logger->debug('__construct(ed) SwarmProcess');
+    }
+
+    /**
+     * Pushes a native command, ex "ls -lahtr" on the processing stack after converting it to a Process object
+     *
+     * @param string $cmd
+     * @return SwarmProcess
+     */
+    public function pushNativeCommandOnStack($cmd)
+    {
+        $tmp = new Process($cmd);
+
+        return $this->pushProcessOnStack($tmp);
+    }
+
+    /**
+     * Pushes a Process object on to the processing stack
+     *
+     * @param Process $process
+     * @return $this
+     */
+    public function pushProcessOnStack(Process $process)
+    {
+        $this->processingStack[] = $process;
+
+        $this->logger->debug('Process pushed on to stack. Stack size: '.count($this->processingStack));
+
+        return $this;
     }
 
     /**
