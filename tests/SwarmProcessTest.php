@@ -1,4 +1,5 @@
 <?php
+use Afrihost\SwarmProcess\SwarmProcess;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -13,7 +14,7 @@ class SwarmProcessTest extends PHPUnit_Framework_TestCase
 
     public function testSetMaxRunStack()
     {
-        $swarm = new \Afrihost\SwarmProcess\SwarmProcess($this->logger);
+        $swarm = new SwarmProcess($this->logger);
 
         $this->assertEquals($swarm->getMaxRunStackSize(), 10); // default is 10
 
@@ -25,15 +26,23 @@ class SwarmProcessTest extends PHPUnit_Framework_TestCase
 
     public function testClassCreation()
     {
-        $swarm = new \Afrihost\SwarmProcess\SwarmProcess($this->logger);
+        $swarm = new SwarmProcess($this->logger);
 
         $this->assertTrue(is_object($swarm), 'Cannot instantiate SwarmProcess class into an object.');
+    }
+
+    /**
+     * @expectedException \OutOfBoundsException
+     */
+    public function testSetMaxRunStackSizeThrowsOutOfBounds() {
+        $swarm = new SwarmProcess($this->logger);
+
+        $swarm->setMaxRunStackSize(-1);
     }
 
     protected function setUp()
     {
         $this->logger = new \Psr\Log\NullLogger();
     }
-
 
 }
