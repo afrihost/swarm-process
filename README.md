@@ -83,9 +83,13 @@ Open an issue on Github and let's take it from there
 ### Contributing
 
 - Fork the repo
+- Clone your repo locally
+- `composer install`
+- Run the tets to make sure all is well: `./vendor/bin/phpunit`
 - Create a branch naming the change you're making
-- Run the tests as stated in the .travis.yml file
-- If you're ready, send me a **pull request**
+- Do your thing :)
+- Run the tests as stated in the .travis.yml file (`./vendor/bin/phpunit`)
+- If you're ready: commit and push to your repo, then send me a **pull request**
 
 If you want to discuss it, I'm happy to chat over an issue on github.com ;)
 
