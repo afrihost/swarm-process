@@ -24,18 +24,20 @@ $console
     ->setDefinition(array(
         new InputOption('use-run', null, InputOption::VALUE_NONE, 'Uses the ->run() method of SwarmProcess'),
         new InputOption('use-tick', null, InputOption::VALUE_NONE, 'Uses the ->tick() method of SwarmProcess'),
-        new InputOption('concurrent-count', null, InputOption::VALUE_REQUIRED, 'Number of concurrent jobs to run', 5)
+        new InputOption('concurrent-count', null, InputOption::VALUE_REQUIRED, 'Number of concurrent jobs to run', 5),
+        new InputOption('number-of-jobs', null, InputOption::VALUE_REQUIRED, 'Number of jobs to run', 50)
     ))
     ->setCode(
         function (InputInterface $input, OutputInterface $output) {
             $concurrent = $input->getOption('concurrent-count');
+            $numberOfJobs = $input->getOption('number-of-jobs');
 
             switch (true) {
                 case ($input->getOption('use-run')):
-                    useRun($concurrent);
+                    useRun($concurrent, $numberOfJobs);
                     break;
                 case ($input->getOption('use-tick')):
-                    useTick($concurrent);
+                    useTick($concurrent, $numberOfJobs);
                     break;
                 default:
                     $output->writeln('<error>You should supply either --use-run or --use-tick to choose which way to use the system to test</error>');
@@ -44,13 +46,13 @@ $console
 
 $console->run();
 
-function useRun($concurrent)
+function useRun($concurrent, $numberOfJobs)
 {
     $logger = new Logger('swarm_logger');
     $logger->pushProcessor(new MemoryUsageProcessor());
 
     $listOfProcessesToRun = array();
-    for ($i = 0; $i < 20; $i++) {
+    for ($i = 0; $i < $numberOfJobs; $i++) {
         $listOfProcessesToRun[] = getCommand();
     }
 
@@ -72,7 +74,7 @@ function getCommand()
     return 'sleep '.rand(1,5);
 }
 
-function useTick($concurrent)
+function useTick($concurrent, $numberOfJobs)
 {
     $logger = new Logger('swarm_logger');
     $logger->pushProcessor(new MemoryUsageProcessor());
@@ -85,7 +87,7 @@ function useTick($concurrent)
     // Now go run it:
     do {
         // If we have work to give the stack, then let's give it:
-        if (++$counter <= 20) {
+        if (++$counter <= $numberOfJobs) {
             $swarm->pushNativeCommandOnStack(getCommand());
         }
     } while ($swarm->tick());
