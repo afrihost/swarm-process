@@ -23,16 +23,19 @@ $console
     ->setDescription('Play command for testing purposes')
     ->setDefinition(array(
         new InputOption('use-run', null, InputOption::VALUE_NONE, 'Uses the ->run() method of SwarmProcess'),
-        new InputOption('use-tick', null, InputOption::VALUE_NONE, 'Uses the ->tick() method of SwarmProcess')
+        new InputOption('use-tick', null, InputOption::VALUE_NONE, 'Uses the ->tick() method of SwarmProcess'),
+        new InputOption('concurrent-count', null, InputOption::VALUE_REQUIRED, 'Number of concurrent jobs to run', 5)
     ))
     ->setCode(
         function (InputInterface $input, OutputInterface $output) {
+            $concurrent = $input->getOption('concurrent-count');
+
             switch (true) {
                 case ($input->getOption('use-run')):
-                    useRun();
+                    useRun($concurrent);
                     break;
                 case ($input->getOption('use-tick')):
-                    useTick();
+                    useTick($concurrent);
                     break;
                 default:
                     $output->writeln('<error>You should supply either --use-run or --use-tick to choose which way to use the system to test</error>');
@@ -41,7 +44,7 @@ $console
 
 $console->run();
 
-function useRun()
+function useRun($concurrent)
 {
     $logger = new Logger('swarm_logger');
     $logger->pushProcessor(new MemoryUsageProcessor());
@@ -53,7 +56,7 @@ function useRun()
 
     $swarm = new SwarmProcess($logger);
 
-    $swarm->setMaxRunStackSize(5);
+    $swarm->setMaxRunStackSize($concurrent);
 
     foreach ($listOfProcessesToRun as $item) {
         $swarm->pushNativeCommandOnStack($item);
@@ -69,14 +72,14 @@ function getCommand()
     return 'sleep '.rand(1,5);
 }
 
-function useTick()
+function useTick($concurrent)
 {
     $logger = new Logger('swarm_logger');
     $logger->pushProcessor(new MemoryUsageProcessor());
 
     $swarm = new SwarmProcess($logger);
 
-    $swarm->setMaxRunStackSize(5);
+    $swarm->setMaxRunStackSize($concurrent);
 
     $counter = 0;
     // Now go run it:
