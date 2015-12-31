@@ -39,14 +39,6 @@ class SwarmProcess
     }
 
     /**
-     * Starts the process of running the Process(es) / commands in the processingStack
-     */
-    public function start()
-    {
-        return $this;
-    }
-
-    /**
      * Runs all the processes, not going over the maxRunStackSize, and continuing until all processes in the processingStack has run their course.
      */
     public function run()
@@ -54,7 +46,18 @@ class SwarmProcess
         $this->runningProcessKeyTracker = 0; // seed the key
 
         // As long as we have more thing we can do, do them:
-        while (count($this->processingStack) > 0) {
+        while ($this->tick()) {
+            // the real work sits in the tick() method
+        }
+    }
+
+    /**
+     * Does the necessary work to figure out whether a process is done and should be removed from the runningStack as well as adding the next process(es) in line into empty slot(s)
+     * If there's more work to be done at the end of the method, tick returns true (so you can use it in your while loop)
+     */
+    public function tick()
+    {
+        if (count($this->processingStack) > 0) {
             // If we have an opne slot, use it:
             while (count($this->currentRunningStack) < $this->maxRunStackSize) {
                 /** @var Process $tmpProcess */
@@ -73,14 +76,8 @@ class SwarmProcess
                 }
             }
         }
-    }
 
-    /**
-     * Does the necessary work to figure out whether a process is done and should be removed from the runningStack as well as adding the next process(es) in line into empty slot(s)
-     */
-    public function tick()
-    {
-        return $this;
+        return ((count($this->processingStack) > 0) || count($this->currentRunningStack) > 0);
     }
 
     /**
