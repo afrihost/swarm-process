@@ -19,7 +19,7 @@ class SwarmProcess
     protected $maxRunStackSize = 10;
 
     /** @var array */
-    protected $processingStack = array();
+    protected $queue = array();
 
     /** @var array */
     private $currentRunningStack = array();
@@ -57,11 +57,11 @@ class SwarmProcess
      */
     public function tick()
     {
-        if (count($this->processingStack) > 0) {
+        if (count($this->queue) > 0) {
             // If we have an opne slot, use it:
             while (count($this->currentRunningStack) < $this->maxRunStackSize) {
                 /** @var Process $tmpProcess */
-                $tmpProcess = array_shift($this->processingStack);
+                $tmpProcess = array_shift($this->queue);
                 $tmpProcess->start();
                 $this->currentRunningStack[++$this->runningProcessKeyTracker] = $tmpProcess;
                 $this->logger->info('+ Started Process ' . $this->runningProcessKeyTracker . ' [' . $tmpProcess->getCommandLine() . ']');
@@ -72,12 +72,12 @@ class SwarmProcess
                 /** @var $runningProcess Process */
                 if (!$runningProcess->isRunning()) {
                     unset($this->currentRunningStack[$runningProcessKey]);
-                    $this->logger->info('- Removed Process ' . $runningProcessKey . ' from currentRunningStack [' . count($this->processingStack) . ' left in queue]');
+                    $this->logger->info('- Removed Process ' . $runningProcessKey . ' from currentRunningStack [' . count($this->queue) . ' left in queue]');
                 }
             }
         }
 
-        return ((count($this->processingStack) > 0) || count($this->currentRunningStack) > 0);
+        return ((count($this->queue) > 0) || count($this->currentRunningStack) > 0);
     }
 
     /**
@@ -101,9 +101,9 @@ class SwarmProcess
      */
     public function pushProcessOnStack(Process $process)
     {
-        $this->processingStack[] = $process;
+        $this->queue[] = $process;
 
-        $this->logger->debug('Process pushed on to stack. Stack size: ' . count($this->processingStack));
+        $this->logger->debug('Process pushed on to stack. Stack size: ' . count($this->queue));
 
         return $this;
     }
