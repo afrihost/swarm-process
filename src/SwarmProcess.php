@@ -57,27 +57,55 @@ class SwarmProcess
      */
     public function tick()
     {
-        if (count($this->queue) > 0) {
-            // If we have an opne slot, use it:
-            while (count($this->currentRunningStack) < $this->maxRunStackSize) {
-                /** @var Process $tmpProcess */
-                $tmpProcess = array_shift($this->queue);
-                $tmpProcess->start();
-                $this->currentRunningStack[++$this->runningProcessKeyTracker] = $tmpProcess;
-                $this->logger->info('+ Started Process ' . $this->runningProcessKeyTracker . ' [' . $tmpProcess->getCommandLine() . ']');
-            }
+        // If we have an open slot, use it:
+        while ($this->haveRunningSlotsAvailable() && ($this->getStackCount() > 0)) {
+            /** @var Process $tmpProcess */
+            $tmpProcess = array_shift($this->queue);
+            $tmpProcess->start();
+            $this->currentRunningStack[++$this->runningProcessKeyTracker] = $tmpProcess;
+            $this->logger->info('+ Started Process ' . $this->runningProcessKeyTracker . ' [' . $tmpProcess->getCommandLine() . ']');
+        }
 
-            // Loop through the running things to check if they're done:
-            foreach ($this->currentRunningStack as $runningProcessKey => $runningProcess) {
-                /** @var $runningProcess Process */
-                if (!$runningProcess->isRunning()) {
-                    unset($this->currentRunningStack[$runningProcessKey]);
-                    $this->logger->info('- Removed Process ' . $runningProcessKey . ' from currentRunningStack [' . count($this->queue) . ' left in queue]');
-                }
+        // Loop through the running things to check if they're done:
+        foreach ($this->currentRunningStack as $runningProcessKey => $runningProcess) {
+            /** @var $runningProcess Process */
+            if (!$runningProcess->isRunning()) {
+                unset($this->currentRunningStack[$runningProcessKey]);
+                $this->logger->info('- Removed Process ' . $runningProcessKey . ' from currentRunningStack [' . count($this->queue) . ' left in queue]');
             }
         }
 
         return ((count($this->queue) > 0) || count($this->currentRunningStack) > 0);
+    }
+
+    /**
+     * Returns true/false whether we have slots available to add more jobs in concurrency
+     *
+     * @return bool
+     */
+    protected function haveRunningSlotsAvailable()
+    {
+        return (count($this->currentRunningStack) < $this->maxRunStackSize);
+    }
+
+    /**
+     * Returns the number of elements still left to do on the queue
+     *
+     * @return int
+     */
+    public function getStackCount()
+    {
+        return count($this->queue);
+    }
+
+    /**
+     * Returns the number of currently running processes
+     *
+     * @return int
+     */
+    public function getCurrentRunningStackCount()
+    {
+        return count($this->currentRunningStack);
     }
 
     /**
