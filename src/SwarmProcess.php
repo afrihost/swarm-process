@@ -34,15 +34,22 @@ class SwarmProcess extends SwarmProcessBase
 
     /**
      * Runs all the processes, not going over the maxRunStackSize, and continuing until all processes in the processingStack has run their course.
+     * @param callable $moreWorkToAddCallable
      */
-    public function run()
+    public function run(callable $moreWorkToAddCallable = null, callable $shouldContinueRunningCallable = null)
     {
         $this->runningProcessKeyTracker = 0; // seed the key
 
         // As long as we have more thing we can do, do them:
-        while ($this->tick()) {
-            // the real work sits in the tick() method
-        }
+        do {
+            // Check if the user specified a process adder callable:
+            if (is_callable($moreWorkToAddCallable)) {
+                // As long as the callable returns us a process to add, we'll add more. It's up to the user to limit this.
+                while ($p = call_user_func($moreWorkToAddCallable)) {
+                    $this->pushProcessOnStack($p);
+                }
+            }
+        } while ($this->tick() || (is_callable($shouldContinueRunningCallable) ? call_user_func($shouldContinueRunningCallable) : false));
     }
 
     /**
