@@ -10,11 +10,8 @@ namespace Afrihost\SwarmProcess;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Process;
 
-class SwarmProcess
+class SwarmProcess extends SwarmProcessBase
 {
-    /** @var LoggerInterface */
-    protected $logger;
-
     /** @var int */
     protected $maxRunStackSize = 10;
 
@@ -28,14 +25,11 @@ class SwarmProcess
     private $runningProcessKeyTracker = 0;
 
     /**
-     * SwarmProcess constructor.
-     * @param LoggerInterface $logger
+     * @return LoggerInterface
      */
-    public function __construct(LoggerInterface $logger)
+    public function getLogger()
     {
-        $this->logger = $logger;
-
-        $this->logger->debug('__construct(ed) SwarmProcess');
+        return $this->logger;
     }
 
     /**
@@ -58,12 +52,12 @@ class SwarmProcess
     public function tick()
     {
         // If we have an open slot, use it:
-        while ($this->haveRunningSlotsAvailable() && ($this->getStackCount() > 0)) {
+        while ($this->haveRunningSlotsAvailable() && ($this->StackCount() > 0)) {
             /** @var Process $tmpProcess */
             $tmpProcess = array_shift($this->queue);
             $tmpProcess->start();
             $this->currentRunningStack[++$this->runningProcessKeyTracker] = $tmpProcess;
-            $this->logger->info('+ Started Process ' . $this->runningProcessKeyTracker . ' [' . $tmpProcess->getCommandLine() . ']');
+            $this->getLogger()->info('+ Started Process ' . $this->runningProcessKeyTracker . ' [' . $tmpProcess->getCommandLine() . ']');
         }
 
         // Loop through the running things to check if they're done:
@@ -71,7 +65,7 @@ class SwarmProcess
             /** @var $runningProcess Process */
             if (!$runningProcess->isRunning()) {
                 unset($this->currentRunningStack[$runningProcessKey]);
-                $this->logger->info('- Removed Process ' . $runningProcessKey . ' from currentRunningStack [' . count($this->queue) . ' left in queue]');
+                $this->getLogger()->info('- Removed Process ' . $runningProcessKey . ' from currentRunningStack [' . count($this->queue) . ' left in queue]');
             }
         }
 
@@ -131,7 +125,7 @@ class SwarmProcess
     {
         $this->queue[] = $process;
 
-        $this->logger->debug('Process pushed on to stack. Stack size: ' . count($this->queue));
+        $this->getLogger()->debug('Process pushed on to stack. Stack size: ' . count($this->queue));
 
         return $this;
     }
@@ -160,7 +154,7 @@ class SwarmProcess
 
         $this->maxRunStackSize = $maxRunStackSize;
 
-        $this->logger->debug('$maxRunStackSize changed to ' . $maxRunStackSize);
+        $this->getLogger()->debug('$maxRunStackSize changed to ' . $maxRunStackSize);
 
         return $this;
     }
