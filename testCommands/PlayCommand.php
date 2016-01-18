@@ -12,6 +12,7 @@ use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
 
 chdir(__DIR__);
 require('../vendor/autoload.php');
@@ -23,6 +24,7 @@ $console
     ->setDescription('Play command for testing purposes')
     ->setDefinition(array(
         new InputOption('use-run', null, InputOption::VALUE_NONE, 'Uses the ->run() method of SwarmProcess'),
+        new InputOption('use-callable', null, InputOption::VALUE_NONE, 'Uses the ->run() method of SwarmProcess - but specifying a callable'),
         new InputOption('use-tick', null, InputOption::VALUE_NONE, 'Uses the ->tick() method of SwarmProcess'),
         new InputOption('concurrent-count', null, InputOption::VALUE_REQUIRED, 'Number of concurrent jobs to run', 5),
         new InputOption('number-of-jobs', null, InputOption::VALUE_REQUIRED, 'Number of jobs to run', 50)
@@ -38,6 +40,9 @@ $console
                     break;
                 case ($input->getOption('use-tick')):
                     useTick($concurrent, $numberOfJobs);
+                    break;
+                case ($input->getOption('use-callable')):
+                    useCallable($concurrent, $numberOfJobs);
                     break;
                 default:
                     $output->writeln('<error>You should supply either --use-run or --use-tick to choose which way to use the system to test</error>');
@@ -68,10 +73,43 @@ function useRun($concurrent, $numberOfJobs)
     $swarm->run();
 }
 
+function useCallable($concurrent, $numberOfJobs)
+{
+    $logger = new Logger('swarm_logger');
+    $logger->pushProcessor(new MemoryUsageProcessor());
+
+    $listOfProcessesToRun = array();
+    for ($i = 0; $i < $numberOfJobs; $i++) {
+        $listOfProcessesToRun[] = getCommand();
+    }
+
+    $swarm = new SwarmProcess($logger);
+
+    $swarm->setMaxRunStackSize($concurrent);
+
+    // Now go run it:
+    $swarm->run(function() {
+        usleep(50000);
+
+        if (rand(0,3) == 0) {
+            return new Process(getCommand());
+        } else {
+            echo 'skipped...'.PHP_EOL;
+        }
+    }, function() {
+        static $runcount = 0;
+
+        $runcount++;
+
+        echo '>>>>>>>>>>>>>>>>>>>>>>>>> '.$runcount.PHP_EOL;
+        return $runcount < 5;
+    });
+}
+
 function getCommand()
 {
 //    return 'ls -lahtr';
-    return 'sleep '.rand(1,5);
+    return 'sleep '.rand(1,5).'.00000001';
 }
 
 function useTick($concurrent, $numberOfJobs)
