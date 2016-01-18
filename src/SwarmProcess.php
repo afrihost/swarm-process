@@ -59,7 +59,7 @@ class SwarmProcess extends SwarmProcessBase
     public function tick()
     {
         // If we have an open slot, use it:
-        while ($this->haveRunningSlotsAvailable() && ($this->StackCount() > 0)) {
+        while ($this->haveRunningSlotsAvailable() && (count($this->queue) > 0)) {
             /** @var Process $tmpProcess */
             $tmpProcess = array_shift($this->queue);
             $tmpProcess->start();
