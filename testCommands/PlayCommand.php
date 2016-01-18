@@ -61,7 +61,7 @@ function useRun($concurrent, $numberOfJobs)
     $swarm->setMaxRunStackSize($concurrent);
 
     foreach ($listOfProcessesToRun as $item) {
-        $swarm->pushNativeCommandOnStack($item);
+        $swarm->pushNativeCommandOnQueue($item);
     }
 
     // Now go run it:
@@ -88,7 +88,7 @@ function useTick($concurrent, $numberOfJobs)
     do {
         // If we have work to give the stack, then let's give it:
         if (++$counter <= $numberOfJobs) {
-            $swarm->pushNativeCommandOnStack(getCommand());
+            $swarm->pushNativeCommandOnQueue(getCommand());
         }
     } while ($swarm->tick());
 }

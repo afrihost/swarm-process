@@ -46,7 +46,7 @@ class SwarmProcess extends SwarmProcessBase
             if (is_callable($moreWorkToAddCallable)) {
                 // As long as the callable returns us a process to add, we'll add more. It's up to the user to limit this.
                 while ($p = call_user_func($moreWorkToAddCallable)) {
-                    $this->pushProcessOnStack($p);
+                    $this->pushProcessOnQueue($p);
                 }
             }
         } while ($this->tick() || (is_callable($shouldContinueRunningCallable) ? call_user_func($shouldContinueRunningCallable) : false));
@@ -115,11 +115,11 @@ class SwarmProcess extends SwarmProcessBase
      * @param string $cmd
      * @return SwarmProcess
      */
-    public function pushNativeCommandOnStack($cmd)
+    public function pushNativeCommandOnQueue($cmd)
     {
         $tmp = new Process($cmd);
 
-        return $this->pushProcessOnStack($tmp);
+        return $this->pushProcessOnQueue($tmp);
     }
 
     /**
@@ -128,7 +128,7 @@ class SwarmProcess extends SwarmProcessBase
      * @param Process $process
      * @return $this
      */
-    public function pushProcessOnStack(Process $process)
+    public function pushProcessOnQueue(Process $process)
     {
         $this->queue[] = $process;
 
