@@ -24,28 +24,25 @@ There are two ways of using this, have it do the whole run or interactive mode u
 #### $swarm->run()
 ```php
 use Afrihost\SwarmProcess\SwarmProcess;
-use Monolog\Logger;
 
-$logger = new Logger('swarm_logger'); // You'll need to give it a logger
-
-$swarm = new SwarmProcess($logger);
+$swarm = new SwarmProcess(); // you may provide a Psr/Logger here if you want to
 $swarm->setMaxRunStackSize(20); // default is 10 (cannot make it <= 0)
 
 // Just some mock things for it to do:
 for ($i = 0; $i < 10000; $i++) {
-    $swarm->pushNativeCommandOnStack('echo "test"');
+    $swarm->pushNativeCommandOnQueue('echo "test"');
 
     // Some examples of how to use it - note the new Process way!
-    // $swarm->pushNativeCommandOnStack('ls');
-    // $swarm->pushNativeCommandOnStack('sleep 10');
-    // $swarm->pushProcessOnStack(new Process('ls'));
+    // $swarm->pushNativeCommandOnQueue('ls');
+    // $swarm->pushNativeCommandOnQueue('sleep 10');
+    // $swarm->pushProcessOnQueue(new Process('ls'));
 }
 
 // Now we tell it to go run all 10k things, but to adhere to the 20 concurrent rule set above:
 $swarm->run();
 ```
 
-Wht the above code it should be quite self-explanatory. I'd like to point out though, that when you call `$swarm->run();` you now have to wait for it to be done with it's 10k cycle before the rest of you rapplication continues. If, however, you want to carry on with other things, that's what `$swarm->tick();` is for...
+The above code it should be quite self-explanatory. I'd like to point out though, that when you call `$swarm->run();` you now have to wait for it to be done with it's 10k cycle before the rest of you rapplication continues. If, however, you want to carry on with other things, that's what `$swarm->tick();` is for...
 
 #### $swarm->tick()
 
@@ -56,24 +53,58 @@ Under the hood, the `$swarm->run();` method merely starts a while loop and runs 
 For this reason, you could replace the very last bit of code above, the `$swarm->run();` with:
 
 ```php
-while ($swarm->tick()) {
+do {
 	// do nothing
-}
+} while ($swarm->tick());
 ```
 
-That will do exactly the same as the $swarm->run() command (go ahead, look at the code).
+That will do exactly the same as the $swarm->run() function.
 
 If you want to, say, check your DB to see if there's more things to add to the swarm, then you might do something like this:
 
 ```php
-while ($swarm->tick()) {
+do {
 	if ($db->hasMoreStuffToAddDummyFunction()) {
-		$swarm->pushProcessOnStack(new Process($db->getSomeCommandToAddToTheQueue()));
+		$swarm->pushProcessOnQueue(new Process($db->getSomeCommandToAddToTheQueue()));
 	}
-}
+} while ($swarm->tick());
 ```
 
 A note on large arrays: When you push a new command/process on to an array, the method of "popping" an element from the **beginning** of the array is the use of `array_shift`. Though in later versions of PHP it's much less prominent, there is still a slight performance knock on large arrays, because of the fact that PHP will have to re-index the array after each `array_shift`. So, if you're dealing with 100s of thousands of entries, and you are having performance issues due to this fact, you'd do good trying the $swarm->tick() method agove and trickle-feeding things into the system.
+
+#### Closure / Callback
+
+As of version 1.1 we now provide two callback parameters for the `->run()` method.
+
+The first callable parameter is used by you to add any more work to the queue while it's running. Think of it as what is inside the do-while in the above-mentioned example.
+
+The second callable parameter is used to override the ending of the loop. For example you might not want the loop to end if the queue is empty, but only after say 5 minutes of inactivity. This you can then put in the second callback. Internally the logic is: "If either tick() returns true **or** the callback returns true, the loop still continues!"
+
+Here's an example of how that would look:
+
+```php
+$swarm->run(
+    function() {
+        // do a check to see if we should have more commands added to the queue
+        return new Process('sleep 5');
+    },
+    function () {
+        // check if the loop should still continue, if so return true
+        return true;
+    }
+);
+```
+
+#### Examples:
+
+You may also look at the examples provided in the `examples` folder. Run them using:
+
+```shell
+php examples/simple-run.php
+php examples/simple-run-process.php
+php examples/simple-tick.php
+php examples/simple-run-with-callbacks.php
+```
 
 ### Need help?
 
@@ -97,3 +128,4 @@ If you want to discuss it, I'm happy to chat over an issue on github.com ;)
 - [x] Finalize README.md - this however, should wait until the project code is fleshed out a little bit more
 - [x] Create interactive mode (`->tick()`)
 - [ ] Create public method to ask how many things left in the queue, and how many things are currently running
+- [x] Create closure callbacks for `->run()` to give more control to the user without having to write their own while loop
