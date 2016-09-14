@@ -71,8 +71,11 @@ class SwarmProcess extends SwarmProcessBase
         foreach ($this->currentRunningStack as $runningProcessKey => $runningProcess) {
             /** @var $runningProcess Process */
             if (!$runningProcess->isRunning()) {
+                $logMessage =  '- Removed Process ' . $runningProcessKey . ' from currentRunningStack - '.
+                    'ExitCode:'.$runningProcess->getExitCode().'('.$runningProcess->getExitCodeText().') '.
+                    '[' . count($this->queue) . ' left in queue]';
                 unset($this->currentRunningStack[$runningProcessKey]);
-                $this->getLogger()->info('- Removed Process ' . $runningProcessKey . ' from currentRunningStack [' . count($this->queue) . ' left in queue]');
+                $this->getLogger()->info($logMessage);
             }
         }
 
