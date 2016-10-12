@@ -1,5 +1,6 @@
 <?php
 use Afrihost\SwarmProcess\SwarmProcess;
+use Psr\Log\AbstractLogger;
 use Psr\Log\NullLogger;
 
 /**
@@ -14,17 +15,26 @@ class SwarmProcessTestNoSetup extends PHPUnit_Framework_TestCase
      */
     public function testLoggerGiven()
     {
-        $given = new NullLogger();
+        $given = new TestLogger();
 
         $swarm = new SwarmProcess($given);
 
-        $this->assertTrue($given === $swarm->getLogger(), 'Logger given at construction not the same as class has internally');
+        $this->assertSame($given, \PHPUnit_Framework_Assert::getObjectAttribute($swarm, 'logger'), 'Logger given at construction not the same as class has internally');
     }
 
     public function testLoggerNotGiven()
     {
         $swarm = new SwarmProcess();
 
-        $this->assertInstanceOf('Psr\Log\NullLogger', $swarm->getLogger(), 'Logger expected when none is given, should be the NullLogger');
+        $this->assertInstanceOf('Psr\Log\NullLogger', \PHPUnit_Framework_Assert::getObjectAttribute($swarm, 'logger'), 'Logger expected when none is given, should be the NullLogger');
     }
 }
+
+class TestLogger extends AbstractLogger
+{
+    /**
+     * {@inheritdoc}
+     */
+    public function log($level, $message, array $context = []) {}
+}
+

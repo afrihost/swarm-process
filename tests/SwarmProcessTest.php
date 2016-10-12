@@ -1,7 +1,5 @@
 <?php
 use Afrihost\SwarmProcess\SwarmProcess;
-use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * User: sarel
@@ -10,15 +8,11 @@ use Psr\Log\NullLogger;
  */
 class SwarmProcessTest extends PHPUnit_Framework_TestCase
 {
-    /** @var LoggerInterface */
-    private $logger;
-
     /** @var SwarmProcess */
     private $swarm;
 
     protected function setUp() {
-        $this->logger = new NullLogger();
-        $this->swarm = new SwarmProcess($this->logger);
+        $this->swarm = new SwarmProcess();
     }
 
     public function testSetMaxRunStack()
