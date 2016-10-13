@@ -7,7 +7,6 @@
 
 namespace Afrihost\SwarmProcess;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Process\Process;
 
 class SwarmProcess extends SwarmProcessBase
@@ -25,16 +24,10 @@ class SwarmProcess extends SwarmProcessBase
     private $runningProcessKeyTracker = 0;
 
     /**
-     * @return LoggerInterface
-     */
-    public function getLogger()
-    {
-        return $this->logger;
-    }
-
-    /**
      * Runs all the processes, not going over the maxRunStackSize, and continuing until all processes in the processingStack has run their course.
+     *
      * @param callable $moreWorkToAddCallable
+     * @param callable $shouldContinueRunningCallable
      */
     public function run(callable $moreWorkToAddCallable = null, callable $shouldContinueRunningCallable = null)
     {
@@ -64,7 +57,7 @@ class SwarmProcess extends SwarmProcessBase
             $tmpProcess = array_shift($this->queue);
             $tmpProcess->start();
             $this->currentRunningStack[++$this->runningProcessKeyTracker] = $tmpProcess;
-            $this->getLogger()->info('+ Started Process ' . $this->runningProcessKeyTracker . ' [' . $tmpProcess->getCommandLine() . ']');
+            $this->logger->info('+ Started Process ' . $this->runningProcessKeyTracker . ' [' . $tmpProcess->getCommandLine() . ']');
         }
 
         // Loop through the running things to check if they're done:
@@ -75,7 +68,7 @@ class SwarmProcess extends SwarmProcessBase
                     'ExitCode:'.$runningProcess->getExitCode().'('.$runningProcess->getExitCodeText().') '.
                     '[' . count($this->queue) . ' left in queue]';
                 unset($this->currentRunningStack[$runningProcessKey]);
-                $this->getLogger()->info($logMessage);
+                $this->logger->info($logMessage);
             }
         }
 
@@ -135,7 +128,7 @@ class SwarmProcess extends SwarmProcessBase
     {
         $this->queue[] = $process;
 
-        $this->getLogger()->debug('Process pushed on to stack. Stack size: ' . count($this->queue));
+        $this->logger->debug('Process pushed on to stack. Stack size: ' . count($this->queue));
 
         return $this;
     }
@@ -154,7 +147,9 @@ class SwarmProcess extends SwarmProcessBase
      * Set the maximum number of processes that can be run at the same time (concurrently)
      *
      * @param int $maxRunStackSize
+     *
      * @return SwarmProcess
+     * @throws \OutOfBoundsException
      */
     public function setMaxRunStackSize($maxRunStackSize)
     {
@@ -164,7 +159,7 @@ class SwarmProcess extends SwarmProcessBase
 
         $this->maxRunStackSize = $maxRunStackSize;
 
-        $this->getLogger()->debug('$maxRunStackSize changed to ' . $maxRunStackSize);
+        $this->logger->debug('$maxRunStackSize changed to ' . $maxRunStackSize);
 
         return $this;
     }
