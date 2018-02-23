@@ -70,7 +70,7 @@ class SwarmProcess extends SwarmProcessBase
                 $logMessage =  '- Removed Process ' . $runningProcessKey . ' from currentRunningStack - '.
                     'ExitCode:'.$runningProcess->getExitCode().'('.$runningProcess->getExitCodeText().') '.
                     '[' . count($this->queue) . ' left in queue]';
-                if($runningProcess->isSuccesful()) {
+                if($runningProcess->isSuccessful()) {
                     $this->successfulProcessCount++;
                 }
                 unset($this->currentRunningStack[$runningProcessKey]);

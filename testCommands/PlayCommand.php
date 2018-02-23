@@ -71,6 +71,7 @@ function useRun($concurrent, $numberOfJobs)
 
     // Now go run it:
     $swarm->run();
+    $logger->info("Successful processes: ".$swarm->getSuccessfulProcessCount());
 }
 
 function useCallable($concurrent, $numberOfJobs)
