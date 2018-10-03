@@ -23,6 +23,9 @@ class SwarmProcess extends SwarmProcessBase
     /** @var int */
     private $runningProcessKeyTracker = 0;
 
+    /** @var integer */
+    private $successfulProcessCount = 0;
+
     /**
      * Runs all the processes, not going over the maxRunStackSize, and continuing until all processes in the processingStack has run their course.
      *
@@ -67,6 +70,9 @@ class SwarmProcess extends SwarmProcessBase
                 $logMessage =  '- Removed Process ' . $runningProcessKey . ' from currentRunningStack - '.
                     'ExitCode:'.$runningProcess->getExitCode().'('.$runningProcess->getExitCodeText().') '.
                     '[' . count($this->queue) . ' left in queue]';
+                if($runningProcess->isSuccessful()) {
+                    $this->successfulProcessCount++;
+                }
                 unset($this->currentRunningStack[$runningProcessKey]);
                 $this->logger->info($logMessage);
             }
@@ -163,6 +169,19 @@ class SwarmProcess extends SwarmProcessBase
 
         return $this;
     }
+
+
+    /**
+     * Get the number of successful processes that have completed.
+     *
+     * @return int
+     */
+    public function getSuccessfulProcessCount()
+    {
+        return $this->successfulProcessCount;
+    }
+
+
 
 
 }
