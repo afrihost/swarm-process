@@ -1,5 +1,8 @@
 language: php
 
+# Run on container environment (needed for trais caching feature)
+sudo: false
+
 matrix:
   fast_finish: true
   include:
@@ -13,6 +16,12 @@ matrix:
     - php: hhvm
     - php: 7.1
     - php: 7.2
+
+# Cache composer files for faster test times
+cache:
+  directories:
+    - vendor
+    - $HOME/.composer/cache
 
 before_script:
   - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
