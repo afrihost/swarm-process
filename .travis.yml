@@ -6,9 +6,9 @@ matrix:
     - php: 5.5
     - php: 5.6
     - php: 7.0
-    - hhvm
+    - php: hhvm
   allow_failures:
-    - hhvm
+    - php: hhvm
 
 before_script:
   - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
