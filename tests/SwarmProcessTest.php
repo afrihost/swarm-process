@@ -6,7 +6,7 @@ use Afrihost\SwarmProcess\SwarmProcess;
  * Date: 2015/12/29
  * Time: 17:51
  */
-class SwarmProcessTest extends PHPUnit_Framework_TestCase
+class SwarmProcessTest extends PHPUnit\Framework\TestCase
 {
     /** @var SwarmProcess */
     private $swarm;
