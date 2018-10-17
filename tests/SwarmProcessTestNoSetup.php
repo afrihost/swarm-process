@@ -8,7 +8,7 @@ use Psr\Log\NullLogger;
  * Date: 2016/01/18
  * Time: 07:56
  */
-class SwarmProcessTestNoSetup extends PHPUnit_Framework_TestCase
+class SwarmProcessTestNoSetup extends PHPUnit\Framework\TestCase
 {
     /**
      * Tests whether if we give it a logger, we get return the same logger if we check which one it has internally
@@ -19,14 +19,14 @@ class SwarmProcessTestNoSetup extends PHPUnit_Framework_TestCase
 
         $swarm = new SwarmProcess($given);
 
-        $this->assertSame($given, \PHPUnit_Framework_Assert::getObjectAttribute($swarm, 'logger'), 'Logger given at construction not the same as class has internally');
+        $this->assertSame($given, PHPUnit\Framework\Assert::getObjectAttribute($swarm, 'logger'), 'Logger given at construction not the same as class has internally');
     }
 
     public function testLoggerNotGiven()
     {
         $swarm = new SwarmProcess();
 
-        $this->assertInstanceOf('Psr\Log\NullLogger', \PHPUnit_Framework_Assert::getObjectAttribute($swarm, 'logger'), 'Logger expected when none is given, should be the NullLogger');
+        $this->assertInstanceOf('Psr\Log\NullLogger', PHPUnit\Framework\Assert::getObjectAttribute($swarm, 'logger'), 'Logger expected when none is given, should be the NullLogger');
     }
 }
 
