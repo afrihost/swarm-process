@@ -7,17 +7,17 @@ matrix:
   fast_finish: true
   include:
     - php: 5.5
+    - php: 5.5
+      env: DEPENDENCIES='low'
     - php: 5.6
     - php: 7.0
+    - php: 7.0
+      env: DEPENDENCIES='low'
     - php: 7.1
     - php: 7.2
     - php: hhvm-3.24
   allow_failures:
-    - php: 5.5
-    - php: 5.6
     - php: hhvm-3.24
-    - php: 7.1
-    - php: 7.2
 
 # Cache composer files for faster test times
 cache:
@@ -26,8 +26,10 @@ cache:
     - $HOME/.composer/cache
 
 before_script:
-  - curl -sSfL -o ~/.phpenv/versions/hhvm/bin/phpunit https://phar.phpunit.de/phpunit-5.7.phar
   - composer self-update
-  - composer install --prefer-source --no-interaction --dev
+
+install:
+  - if [ -z "$DEPENDENCIES" ]; then composer install --no-interaction --prefer-dist; fi;
+  - if [ "$DEPENDENCIES" == "low" ]; then composer update --no-interaction  --prefer-dist --prefer-lowest; fi;
  
 script: vendor/bin/phpunit
