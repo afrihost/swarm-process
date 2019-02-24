@@ -95,6 +95,19 @@ $swarm->run(
 );
 ```
 
+#### Completion Callback
+
+As of version 1.2 you will be able to provide a callback to be called upon completion of each process. The aim ere is to use it to ascertain what the exitCode was, for example. A use case would be to reschedule the process in the case of failure, or to log te failure for a human to look into.
+
+Here's how you would use it:
+
+```php
+$swarmProcess = new SwarmProcess($logger);
+$swarmProcess->setCompletedCallback(function(Symfony\Component\Process\Process $process) {
+    // do something with the $process returned, checking it's exit code, and perhaps putting it back on the stack
+});
+```
+
 #### Examples:
 
 You may also look at the examples provided in the `examples` folder. Run them using:
