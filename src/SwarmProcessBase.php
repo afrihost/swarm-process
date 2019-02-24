@@ -1,10 +1,4 @@
 <?php
-/**
- * User: sarel
- * Date: 2016/01/18
- * Time: 08:16
- */
-
 namespace Afrihost\SwarmProcess;
 
 use Psr\Log\LoggerAwareTrait;
