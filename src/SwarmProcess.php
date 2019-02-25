@@ -20,9 +20,6 @@ class SwarmProcess extends SwarmProcessBase
     /** @var integer */
     private $successfulProcessCount = 0;
 
-    /** @var callable */
-    private $completedCallback;
-
     /**
      * Runs all the processes, not going over the maxRunStackSize, and continuing until all processes in the processingStack has run their course.
      *
@@ -73,8 +70,8 @@ class SwarmProcess extends SwarmProcessBase
                 unset($this->currentRunningStack[$runningProcessKey]);
                 $this->logger->info($logMessage);
 
-                if (is_callable($this->getCompletedCallback())) {
-                    call_user_func($this->getCompletedCallback(), $runningProcess);
+                if (is_callable($this->getConfiguration()->getCompletedCallback())) {
+                    call_user_func($this->getConfiguration()->getCompletedCallback(), $runningProcess);
                 }
             }
         }
@@ -179,29 +176,6 @@ class SwarmProcess extends SwarmProcessBase
     public function getSuccessfulProcessCount()
     {
         return $this->successfulProcessCount;
-    }
-
-    /**
-     * @return callable
-     */
-    public function getCompletedCallback()
-    {
-        return $this->completedCallback;
-    }
-
-    /**
-     * @param callable $completedCallback
-     * @return SwarmProcess
-     * @throws \Exception
-     */
-    public function setCompletedCallback($completedCallback)
-    {
-        if (!is_callable($completedCallback)) {
-            throw new \Exception('Must provide callable as callback');
-        }
-
-        $this->completedCallback = $completedCallback;
-        return $this;
     }
 
 }
