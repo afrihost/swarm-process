@@ -20,14 +20,16 @@ require('../vendor/autoload.php');
 
 $logger = new Logger('swarm_logger');
 
-$swarmProcess = new SwarmProcess($logger, (new Configuration())->setCompletedCallback(function(Process $process) {
+$closure = function(Process $process) use ($logger) {
+    $logger->warning('We\'re checking the exit code of a process, and it was: '.$process->getExitCode().' ['.$process->getExitCodeText().']');
+};
 
-}));
+$swarmProcess = new SwarmProcess($logger, (new Configuration())->setCompletedCallback($closure));
 
 // Add a few things to do:
 $swarmProcess->pushProcessOnQueue(new Process('sleep 9'));
 $swarmProcess->pushProcessOnQueue(new Process('sleep 8'));
-$swarmProcess->pushProcessOnQueue(new Process('sleep 7'));
+$swarmProcess->pushProcessOnQueue(new Process('sleep')); // should cause an error, thus non-0 exit code
 $swarmProcess->pushProcessOnQueue(new Process('sleep 6'));
 $swarmProcess->pushProcessOnQueue(new Process('sleep 5'));
 $swarmProcess->pushProcessOnQueue(new Process('sleep 5'));
