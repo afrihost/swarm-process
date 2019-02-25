@@ -1,10 +1,4 @@
 <?php
-/**
- * User: sarel
- * Date: 2015/12/29
- * Time: 17:48
- */
-
 namespace Afrihost\SwarmProcess;
 
 use Symfony\Component\Process\Process;
@@ -75,6 +69,10 @@ class SwarmProcess extends SwarmProcessBase
                 }
                 unset($this->currentRunningStack[$runningProcessKey]);
                 $this->logger->info($logMessage);
+
+                if (is_callable($this->getConfiguration()->getCompletedCallback())) {
+                    call_user_func($this->getConfiguration()->getCompletedCallback(), $runningProcess);
+                }
             }
         }
 
@@ -170,7 +168,6 @@ class SwarmProcess extends SwarmProcessBase
         return $this;
     }
 
-
     /**
      * Get the number of successful processes that have completed.
      *
@@ -180,8 +177,5 @@ class SwarmProcess extends SwarmProcessBase
     {
         return $this->successfulProcessCount;
     }
-
-
-
 
 }
