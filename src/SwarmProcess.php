@@ -1,6 +1,7 @@
 <?php
 namespace Afrihost\SwarmProcess;
 
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class SwarmProcess extends SwarmProcessBase
@@ -60,6 +61,19 @@ class SwarmProcess extends SwarmProcessBase
         // Loop through the running things to check if they're done:
         foreach ($this->currentRunningStack as $runningProcessKey => $runningProcess) {
             /** @var $runningProcess Process */
+
+            if ($this->getConfiguration()->isEnforceProcessTimeouts()) {
+                if ($runningProcess->isRunning()) {
+                    try {
+                        $runningProcess->checkTimeout();
+                    } catch (ProcessTimedOutException $e) {
+                        // do nothing, just log as checkTimeout() internally stops the process
+                        $logMessage =  '- Killed Process ' . $runningProcessKey . ' from currentRunningStack. Timeout of '.$runningProcess->getTimeout().' reached';
+                        $this->logger->warning($logMessage);
+                    }
+                }
+            }
+
             if (!$runningProcess->isRunning()) {
                 $logMessage =  '- Removed Process ' . $runningProcessKey . ' from currentRunningStack - '.
                     'ExitCode:'.$runningProcess->getExitCode().'('.$runningProcess->getExitCodeText().') '.
