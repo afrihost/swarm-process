@@ -97,7 +97,7 @@ $swarm->run(
 
 #### Completion Callback
 
-As of version 1.2 you will be able to provide a callback to be called upon completion of each process. The aim, for example, is to use it to ascertain what the exitCode was. A use case would be to reschedule the process in the case of failure, or to log te failure for a human to look into.
+As of version 1.2 you will be able to provide a callback to be called upon completion of each process. The aim, for example, is to use it to ascertain what the exitCode was. A use case would be to reschedule the process in the case of failure, or to log the failure for a human to look into.
 
 The `SwarmProcess/Configuration` object is used to pass the callback in to the system.
 
