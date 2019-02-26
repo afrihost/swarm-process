@@ -49,15 +49,6 @@ class SwarmProcess extends SwarmProcessBase
      */
     public function tick()
     {
-        // If we have an open slot, use it:
-        while ($this->haveRunningSlotsAvailable() && (count($this->queue) > 0)) {
-            /** @var Process $tmpProcess */
-            $tmpProcess = array_shift($this->queue);
-            $tmpProcess->start();
-            $this->currentRunningStack[++$this->runningProcessKeyTracker] = $tmpProcess;
-            $this->logger->info('+ Started Process ' . $this->runningProcessKeyTracker . ' [' . $tmpProcess->getCommandLine() . ']');
-        }
-
         // Loop through the running things to check if they're done:
         foreach ($this->currentRunningStack as $runningProcessKey => $runningProcess) {
             /** @var $runningProcess Process */
@@ -89,6 +80,8 @@ class SwarmProcess extends SwarmProcessBase
                 }
             }
         }
+
+        $this->tickFillOpenSlots();
 
         return ((count($this->queue) > 0) || count($this->currentRunningStack) > 0);
     }
@@ -190,6 +183,20 @@ class SwarmProcess extends SwarmProcessBase
     public function getSuccessfulProcessCount()
     {
         return $this->successfulProcessCount;
+    }
+
+    /**
+     * Fills any open slots in the run-stack with new processes, if there are available in the queue
+     */
+    protected function tickFillOpenSlots()
+    {
+        while ($this->haveRunningSlotsAvailable() && (count($this->queue) > 0)) {
+            /** @var Process $tmpProcess */
+            $tmpProcess = array_shift($this->queue);
+            $tmpProcess->start();
+            $this->currentRunningStack[++$this->runningProcessKeyTracker] = $tmpProcess;
+            $this->logger->info('+ Started Process ' . $this->runningProcessKeyTracker . ' [' . $tmpProcess->getCommandLine() . ']');
+        }
     }
 
 }
