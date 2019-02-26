@@ -113,6 +113,29 @@ $closure = function(Process $process) use ($logger) {
 $swarmProcess = new SwarmProcess($logger, (new Configuration())->setCompletedCallback($closure));
 ```
 
+#### Enforcement of timeouts:
+When using Process, the default timeout is set to 60 seconds. Before version 1.2, SwarmProcess did not check and enforce this. A configuration option now exist for you to switch enforcement of this on. It is off by default, so current usages of SwarmProcess under version 1.* will not be affected.
+
+There's an example of how to achieve this:
+```php
+$logger = new Logger('swarm_logger');
+
+$configuration = (new Configuration())
+    ->setEnforceProcessTimeouts(true);
+
+$swarmProcess = new SwarmProcess($logger, $configuration);
+
+// two Processes, both set to timeout at 5 seconds
+$swarmProcess->pushProcessOnQueue(new Process('sleep 9', null, null, null, 5));
+$swarmProcess->pushProcessOnQueue(new Process('sleep 2', null, null, null, 5));
+
+$swarmProcess->setMaxRunStackSize(4);
+
+$swarmProcess->run();
+```
+
+The above will run the two processes concurrently. The timeout of both are set to 5 seconds (you can obviously set individual timeouts for all). Therefore the `sleep 9` process will get timed out once the internal `tick()` method is executed, but the `sleep 2` process will run it's course naturally. Invoking the timeout like this on a process will have SwarmProcess pass a warning to the logger passed in. You can use the callback structure explained above to programatically notice this by looking at the exitCode and do something about the timeout.
+
 #### Examples:
 
 You may also look at the examples provided in the `examples` folder. Run them using:
@@ -122,6 +145,8 @@ php examples/simple-run.php
 php examples/simple-run-process.php
 php examples/simple-tick.php
 php examples/simple-run-with-callbacks.php
+php examples/simple-run-enforcing-timeouts.php
+php examples/simple-run-with-completion-callback.php
 ```
 
 ### Need help?

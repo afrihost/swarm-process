@@ -6,6 +6,27 @@ class Configuration
     /** @var callable */
     private $completedCallback;
 
+    /** @var bool $enforceProcessTimeouts */
+    private $enforceProcessTimeouts = false;
+
+    /**
+     * @return bool
+     */
+    public function isEnforceProcessTimeouts()
+    {
+        return $this->enforceProcessTimeouts;
+    }
+
+    /**
+     * @param bool $enforceProcessTimeouts
+     * @return Configuration
+     */
+    public function setEnforceProcessTimeouts($enforceProcessTimeouts)
+    {
+        $this->enforceProcessTimeouts = $enforceProcessTimeouts;
+        return $this;
+    }
+
     /**
      * @return callable
      */
