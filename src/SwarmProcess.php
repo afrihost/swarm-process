@@ -40,6 +40,11 @@ class SwarmProcess extends SwarmProcessBase
                     $this->pushProcessOnQueue($p);
                 }
             }
+
+            // If configured, slow down the loop slightly to save CPU.
+            if ($this->getConfiguration()->getTickLoopDelayMicroseconds() > 0) {
+                usleep($this->getConfiguration()->getTickLoopDelayMicroseconds());
+            }
         } while ($this->tick() || (is_callable($shouldContinueRunningCallable) ? call_user_func($shouldContinueRunningCallable) : false));
     }
 
