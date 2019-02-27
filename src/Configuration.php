@@ -9,6 +9,27 @@ class Configuration
     /** @var bool $enforceProcessTimeouts */
     private $enforceProcessTimeouts = false;
 
+    /** @var int $tickLoopDelayMicroseconds */
+    private $tickLoopDelayMicroseconds = 0;
+
+    /**
+     * @return int
+     */
+    public function getTickLoopDelayMicroseconds()
+    {
+        return $this->tickLoopDelayMicroseconds;
+    }
+
+    /**
+     * @param int $tickLoopDelayMicroseconds
+     * @return Configuration
+     */
+    public function setTickLoopDelayMicroseconds($tickLoopDelayMicroseconds)
+    {
+        $this->tickLoopDelayMicroseconds = $tickLoopDelayMicroseconds;
+        return $this;
+    }
+
     /**
      * @return bool
      */
