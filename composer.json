@@ -1,7 +1,7 @@
 {
   "name": "afrihost/swarm-process",
   "description": "Much like the Process package, but this will run a list of processes, with a limited concurrent - and keep track of them",
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "license": "MIT",
   "keywords": ["process", "swarm", "bulk"],
   "authors": [
