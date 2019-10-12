@@ -22,6 +22,8 @@ matrix:
     - php: hhvm-3.24
     - php: 7.4
 
+dist: trusty
+
 # Cache composer files for faster test times
 cache:
   directories:
