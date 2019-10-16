@@ -1,4 +1,6 @@
 <?php
+
+use Afrihost\SwarmProcess\Configuration;
 use Afrihost\SwarmProcess\SwarmProcess;
 
 /**
@@ -37,6 +39,18 @@ class SwarmProcessTest extends PHPUnit\Framework\TestCase
     public function testSetMaxRunStackSizeThrowsOutOfBounds()
     {
         $this->swarm->setMaxRunStackSize(-1);
+    }
+
+    public function testConfigurationSetting()
+    {
+        $config = new Configuration();
+        // cannot set the callable, because clojure's are not serializable (and the assertion needs this)
+        $config->setEnforceProcessTimeouts(true);
+        $config->setTickLoopDelayMicroseconds(1234);
+
+        $this->swarm->setConfiguration($config);
+
+        $this->assertEquals($config, $this->swarm->getConfiguration());
     }
 
 }
