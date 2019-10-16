@@ -53,4 +53,25 @@ class SwarmProcessTest extends PHPUnit\Framework\TestCase
         $this->assertEquals($config, $this->swarm->getConfiguration());
     }
 
+    public function testFunctionalFullRun()
+    {
+        $this->swarm->setMaxRunStackSize(2);
+        $this->assertEquals(2, $this->swarm->getMaxRunStackSize());
+
+        // We don't actually give it a command to run below, because the tests may be run on windows/linux.
+        $this->swarm->pushNativeCommandOnQueue('');
+        $this->assertEquals(1, $this->swarm->getStackCount());
+        $this->swarm->pushNativeCommandOnQueue('');
+        $this->assertEquals(2, $this->swarm->getStackCount());
+        $this->swarm->pushNativeCommandOnQueue('');
+        $this->assertEquals(3, $this->swarm->getStackCount());
+        $this->swarm->pushNativeCommandOnQueue('');
+        $this->assertEquals(4, $this->swarm->getStackCount());
+
+        $this->swarm->getConfiguration()->setTickLoopDelayMicroseconds(1); // code coverage of tick delay
+
+        $this->swarm->run();
+
+        $this->assertEquals(4, $this->swarm->getSuccessfulProcessCount());
+    }
 }
