@@ -11,7 +11,8 @@ class SwarmProcessTest extends PHPUnit\Framework\TestCase
     /** @var SwarmProcess */
     private $swarm;
 
-    protected function setUp() {
+    protected function setUp()
+    {
         $this->swarm = new SwarmProcess();
     }
 
