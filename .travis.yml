@@ -39,9 +39,14 @@ cache:
 
 before_script:
   - composer self-update
+  - composer require satooshi/php-coveralls
+  - composer install
 
 install:
   - if [ -z "$DEPENDENCIES" ]; then composer install --no-interaction --prefer-dist; fi;
   - if [ "$DEPENDENCIES" == "low" ]; then composer update --no-interaction  --prefer-dist --prefer-lowest; fi;
  
-script: vendor/bin/phpunit
+script: vendor/bin/phpunit --coverage-clover ./tests/logs/clover.xml
+
+after_script:
+  - php vendor/bin/coveralls -v
