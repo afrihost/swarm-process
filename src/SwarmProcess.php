@@ -41,10 +41,6 @@ class SwarmProcess extends SwarmProcessBase
                 }
             }
 
-            // If configured, slow down the loop slightly to save CPU.
-            if ($this->getConfiguration()->getTickLoopDelayMicroseconds() > 0) {
-                usleep($this->getConfiguration()->getTickLoopDelayMicroseconds());
-            }
         } while ($this->tick() || (is_callable($shouldContinueRunningCallable) ? call_user_func($shouldContinueRunningCallable) : false));
     }
 
@@ -87,6 +83,11 @@ class SwarmProcess extends SwarmProcessBase
         }
 
         $this->tickFillOpenSlots();
+
+        // If configured, slow down the loop slightly to save CPU.
+        if ($this->getConfiguration()->getTickLoopDelayMicroseconds() > 0) {
+            usleep($this->getConfiguration()->getTickLoopDelayMicroseconds());
+        }
 
         return ((count($this->queue) > 0) || count($this->currentRunningStack) > 0);
     }
