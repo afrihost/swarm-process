@@ -41,7 +41,7 @@ class SwarmProcess extends SwarmProcessBase
                 }
             }
 
-        } while ($this->tick() || (is_callable($shouldContinueRunningCallable) ? call_user_func($shouldContinueRunningCallable) : false));
+        } while ($this->tick() && (is_callable($shouldContinueRunningCallable) ? call_user_func($shouldContinueRunningCallable) : true));
     }
 
     /**
