@@ -42,6 +42,19 @@ class SwarmProcess extends SwarmProcessBase
             }
 
         } while ($this->tick() && (is_callable($shouldContinueRunningCallable) ? call_user_func($shouldContinueRunningCallable) : true));
+
+
+        /**
+         * @var  Process $runningProcess
+         */
+        foreach ($this->currentRunningStack as $runningProcessKey => $runningProcess) {
+            if ($runningProcess->isRunning()) {
+                $runningProcess->stop();
+                // do nothing, just log as checkTimeout() internally stops the process
+                $logMessage = '- Killed Process ' . $runningProcessKey . ' from currentRunningStack.';
+                $this->logger->warning($logMessage);
+            }
+        }
     }
 
     /**
