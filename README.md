@@ -138,7 +138,7 @@ $swarmProcess->run();
 The above will run the two processes concurrently. The timeout of both are set to 5 seconds (you can obviously set individual timeouts for all). Therefore the `sleep 9` process will get timed out once the internal `tick()` method is executed, but the `sleep 2` process will run it's course naturally. Invoking the timeout like this on a process will have SwarmProcess pass a warning to the logger passed in. You can use the callback structure explained above to programatically notice this by looking at the exitCode and do something about the timeout.
 
 #### Tick delay
-This feature exists in order to make the internal loop less heavy on the CPU. There are little need to run the loop constantly, as fast as possible. It is in most cases sufficient to check only every 0.1 seconds. For backward compatibility, this is an optional configuration. Here is how it is activated:
+This feature exists in order to make the internal loop less heavy on the CPU. There are little need to run the loop constantly, as fast as possible. It is in most cases sufficient to check only every 0.1 seconds. For backward compatibility, this is an optional configuration. However, a sensibly low value of 0.01 seconds (10000 microseconds) have been set as the default value. Here is how it is activated:
 
 ```php
 $logger = new Logger('swarm_logger');
