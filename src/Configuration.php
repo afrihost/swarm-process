@@ -10,7 +10,7 @@ class Configuration
     private $enforceProcessTimeouts = false;
 
     /** @var int $tickLoopDelayMicroseconds */
-    private $tickLoopDelayMicroseconds = 0;
+    private $tickLoopDelayMicroseconds = 10000; // sensibly set to 10000 microseconds to play nice with CPU cycles
 
     /**
      * @return int

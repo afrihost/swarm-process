@@ -45,7 +45,7 @@ class ConfigurationTest extends PHPUnit\Framework\TestCase
     public function testSetTickLoopDelayMicroseconds()
     {
         // check default is 0:
-        $this->assertEquals(0, $this->swarmConfig->getTickLoopDelayMicroseconds());
+        $this->assertEquals(10000, $this->swarmConfig->getTickLoopDelayMicroseconds());
 
         // test set and get:
         $this->swarmConfig->setTickLoopDelayMicroseconds(1234);
